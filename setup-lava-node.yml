@@ -8,4 +8,7 @@
     - role: jenkins-node
       jenkins_user: jenkins-lava
 
+    - role: jenkins-node
+      jenkins_user: virtual-jobs
+
     - role: lava-tool
