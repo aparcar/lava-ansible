@@ -10,3 +10,9 @@
   apt:
     name: lava-tool
     install_recommends: yes
+
+- name: install run-lava.sh to /usr/local/bin
+  copy:
+    src: run-lava-job.sh
+    dest: /usr/local/bin/
+    mode: 0755
