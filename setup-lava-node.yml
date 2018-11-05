@@ -1,0 +1,11 @@
+---
+- name: setup jenkins lava node
+  hosts: jenkins-lava
+  user: root
+  roles:
+    - role: common
+
+    - role: jenkins-node
+      jenkins_user: jenkins-lava
+
+    - role: lava-tool

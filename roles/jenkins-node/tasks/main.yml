@@ -1,0 +1,17 @@
+---
+- name: install jenkins packages
+  include_tasks: debian.yml
+  when: ansible_distribution == 'Debian'
+
+- name: add user jenkins
+  user:
+    name: "{{ jenkins_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 4096
+    ssh_key_type: rsa
+    shell: /bin/bash
+
+- name: setup jenkins ssh key
+  authorized_key:
+    user: "{{ jenkins_user }}"
+    key: "{{ lookup('file', 'jenkins.fe80.eu.pub') }}"

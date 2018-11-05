@@ -1,0 +1,12 @@
+---
+
+- name: apt-get update
+  apt:
+    cache_valid_time: 3600
+    update_cache: yes
+  changed_when: false
+
+- name: apt-get install lava-tool
+  apt:
+    name: lava-tool
+    install_recommends: yes

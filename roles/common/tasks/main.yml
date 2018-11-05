@@ -1,0 +1,17 @@
+---
+
+- name: apt-get update
+  apt:
+    cache_valid_time: 3600
+    update_cache: yes
+  changed_when: false
+
+- name: "apt-get install utilities"
+  apt:
+    name: "{{ item }}"
+    install_recommends: no
+  with_items:
+    - git
+    - htop
+    - screen
+    - vim-nox
