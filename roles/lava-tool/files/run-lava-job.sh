@@ -15,6 +15,7 @@
 # TEMPLATE_FILE - path to the lava job template
 
 if [ -z "$LAVA_URL" ] ; then
+	LAVA_DOMAIN="lava.fe80.eu"
 	if [ -z "$LAVA_USER" ] ; then
 		LAVA_USER="$USER"
 	fi
@@ -91,13 +92,13 @@ job_status() {
 
 # job_template: $job_name $filename $IMAGE_URL
 job_template "$JOB_NAME" "job.yml" "$IMAGE_URL"
-JOB_ID=$(job_submit "job.yml" | awk -F': ' '{print $2}')
+JOB_ID=$(job_submit "job.yml" | awk -F': ' '{print $2}' | awk -F/ '{ print $NF }')
 if [ $? -ne 0 ] || [ -z "$JOB_ID" ] ; then
 	jenkins_message "ERROR: Could not create the lava job"
 	exit 1
 fi
 
-jenkins_message "created job $JOB_ID - $LAVA_URL/scheduler/job/$JOB_ID"
+jenkins_message "created job $JOB_ID - https://$LAVA_DOMAIN/scheduler/job/$JOB_ID"
 
 echo "wait until job $JOB_ID is done"
 while ! job_done "$JOB_ID" ; do
