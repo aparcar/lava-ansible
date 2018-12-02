@@ -1,5 +1,5 @@
 ---
-- name: setup jenkins lava node
+- name: setup lava jenkins node to run jenkins
   hosts: jenkins-lava
   user: root
   roles:
