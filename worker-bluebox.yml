@@ -1,0 +1,8 @@
+---
+- name: setup lava worker which run lava jobs
+  hosts: worker
+  user: root
+  roles:
+    - role: common
+
+    - role: lava-worker-lab
