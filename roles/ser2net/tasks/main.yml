@@ -1,0 +1,34 @@
+---
+
+- name: apt-get update
+  apt:
+    cache_valid_time: 3600
+    update_cache: yes
+  changed_when: no
+
+- name: create ser2net directory
+  file:
+    path: /etc/ser2net
+    state: directory
+
+- name: create symlinks for serials
+  file:
+    src: "{{ item.serial }}"
+    path: "/etc/ser2net/{{ item.name }}"
+    state: link
+  with_items: "{{ serials }}"
+
+- name: generate configuration
+  template:
+    src: ser2net.conf
+    dest: /etc/ser2net.conf
+
+- name: enable ser2net service
+  service:
+    name: ser2net
+    enabled: true
+
+- name: start ser2net service
+  service:
+    name: ser2net
+    state: started
