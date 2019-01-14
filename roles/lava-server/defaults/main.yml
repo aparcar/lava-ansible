@@ -1,0 +1,16 @@
+---
+# do we configure nginx?
+
+# only used by nginx
+nginx:
+  enabled: false
+  # enable lets encrypt path within nginx
+  lets_encrypt: false
+  lets_encrypt_path: /var/letencrypt-challenge/
+  ssl:
+    dhparam_path: /etc/nginx/dhparam.pem
+    stapling: false
+    stapling_dns: 8.8.8.8
+    hsts: false
+
+

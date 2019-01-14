@@ -1,0 +1,20 @@
+---
+- name: configure lava site
+  template:
+    src: nginx-lava-server.conf
+    dest: /etc/nginx/sites-available/lava-server.conf
+  notify: reload nginx
+
+- name: configure ssl params
+  template:
+    src: nginx-ssl_params.conf
+    dest: /etc/nginx/ssl_params
+  notify: reload nginx
+
+- name: enable lava-server
+  file:
+    state: link
+    src: /etc/nginx/sites-available/lava-server.conf
+    dest: /etc/nginx/sites-enabled/lava-server.conf
+  notify: reload nginx
+

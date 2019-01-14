@@ -1,0 +1,59 @@
+---
+
+- name: create lavadocs group
+  group:
+    name: lavadocs
+
+- name: create lavadocs user
+  user:
+    name: lavadocs
+    group: lavadocs
+
+- name: install python3-pip
+  apt:
+    name: python3-pip
+
+- name: install virtualenv
+  apt:
+    name: python3-virtualenv
+
+- name: install sphinx
+  become: true
+  become_user: lavadocs
+  pip:
+    name: "{{item}}"
+    virtualenv: /home/lavadocs/venv/
+    virtualenv_python: python3
+  with_items:
+    - sphinx
+    - sphinx_rtd_theme
+
+- name: ensure lavadocs dir exists
+  file:
+    path: /var/www/lava-docs/
+    state: directory
+    owner: lavadocs
+    group: lavadocs
+
+- name: checkout lava-docs
+  become: true
+  become_user: lavadocs
+  git:
+    repo: https://code.fe80.eu/openwrt-lava/lava-docs
+    dest: /home/lavadocs/lava-docs
+
+- name: copy lava cron script
+  copy:
+    src: lavadocs.cron.sh
+    dest: /home/lavadocs/lavadocs.cron.sh
+    mode: 0755
+    owner: lavadocs
+    group: lavadocs
+
+- name: install cron to checkout and build
+  become: true
+  become_user: lavadocs
+  cron:
+    name: "lavadocs"
+    minute: "0"
+    job: "/home/lavadocs/lavadocs.cron.sh"

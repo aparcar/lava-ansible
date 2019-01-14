@@ -1,0 +1,82 @@
+---
+- name: install required packages
+  apt:
+    name: "{{item}}"
+  with_items:
+    - python-pip
+    - postgresql
+    - python-zmq
+    - python-nose
+    - python-netifaces
+  tags: [lava]
+
+- name: add debian backports
+  apt_repository:
+    repo: 'deb http://ftp.debian.org/debian {{ ansible_distribution_release }}-backports main'
+    state: present
+  tags: [lava]
+
+- name: add apt key
+  apt_key:
+    id: ECF3C05CC77102A9
+    keyserver: pgp.mit.edu
+  tags: [lava]
+
+- name: install lava-server and doc
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: latest
+    default_release: "{{ ansible_distribution_release }}-backports"
+  with_items:
+    - lava-server
+    - lava-server-doc
+  tags: [lava]
+
+- name: install lava-dispatcher
+  apt:
+    name: lava-dispatcher
+    state: latest
+    default_release: "{{ ansible_distribution_release }}-backports"
+  tags: [lava]
+
+- name: disable apache because its a dependency of lava-server
+  service:
+    name: apache2
+    enabled: no
+    state: stopped
+  failed_when: false
+  tags: [lava]
+
+- name: configure lava-server/settings.conf
+  template:
+    src: lava-server.conf
+    dest: /etc/lava-server/settings.conf
+    mode: 0640
+    group: lavaserver
+
+- import_tasks: nginx.yml
+  when: nginx.enabled
+  tags: [nginx]
+
+- import_tasks: lava-docs.yml
+  tags: [docs]
+
+- name: check if /etc/lava-server/dispatcher-config/.git is present
+  stat:
+    path: /etc/lava-server/dispatcher-config/.git
+  register: dispatcher
+
+- name: remove old dispatcher configuration
+  file:
+    path: /etc/lava-server/dispatcher-config/
+    state: absent
+  when: dispatcher.stat.exists == false
+
+- name: checking out disaptcher configuration
+  git:
+    repo: 'https://code.fe80.eu/openwrt-lava/lava-dispatcher-config'
+    dest: /etc/lava-server/dispatcher-config/
+    clone: yes
+    update: yes
+    force: yes
