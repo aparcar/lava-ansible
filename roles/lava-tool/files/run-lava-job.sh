@@ -13,6 +13,7 @@
 # JOB_NAME - set the name of the job
 # IMAGE_URL - url to the an image (e.g. produced by jenkins)
 # TEMPLATE_FILE - path to the lava job template
+# COMMIT - the git commit
 
 if [ -z "$LAVA_URL" ] ; then
 	LAVA_DOMAIN="lava.fe80.eu"
@@ -54,7 +55,9 @@ job_template() {
 	local job_name="$1"
 	local file_name="$2"
 	local image_url="$3"
+	local commit="$4"
 	sed "s!IMAGE_URL!${image_url}!g" "$TEMPLATE_FILE" | \
+		sed "s!COMMIT!${commit}!g" | \
 		sed "s!JOB_NAME!${job_name}!g" > "$file_name"
 }
 
@@ -91,7 +94,7 @@ job_status() {
 }
 
 # job_template: $job_name $filename $IMAGE_URL
-job_template "$JOB_NAME" "job.yml" "$IMAGE_URL"
+job_template "$JOB_NAME" "job.yml" "$IMAGE_URL" "$COMMIT"
 JOB_ID=$(job_submit "job.yml" | awk -F': ' '{print $2}' | awk -F/ '{ print $NF }')
 if [ $? -ne 0 ] || [ -z "$JOB_ID" ] ; then
 	jenkins_message "ERROR: Could not create the lava job"
