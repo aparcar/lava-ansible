@@ -1,7 +1,4 @@
 ---
 
-- name: reload nginx
-  service: name=nginx state=reloaded
-
-- name: reload uwsgi
-  service: name=uwsgi state=reloaded
+- name: reload caddy
+  service: name=caddy state=reloaded

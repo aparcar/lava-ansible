@@ -3,23 +3,21 @@
   apt:
     name: "{{item}}"
   with_items:
-    - python-pip
+    - python3-pip
     - postgresql
-    - python-zmq
-    - python-nose
-    - python-netifaces
-  tags: [lava]
-
-- name: add debian backports
-  apt_repository:
-    repo: 'deb http://ftp.debian.org/debian {{ ansible_distribution_release }}-backports main'
-    state: present
+    - git
   tags: [lava]
 
 - name: add apt key
   apt_key:
-    id: ECF3C05CC77102A9
+    id: A791358F2E49B100
     keyserver: pgp.mit.edu
+  tags: [lava]
+
+- name: add Lava repository
+  apt_repository:
+    repo: 'deb https://apt.lavasoftware.org/release {{ ansible_distribution_release }} main'
+    state: present
   tags: [lava]
 
 - name: install lava-server and doc
@@ -27,17 +25,9 @@
     name: "{{ item }}"
     update_cache: yes
     state: latest
-    default_release: "{{ ansible_distribution_release }}-backports"
   with_items:
     - lava-server
     - lava-server-doc
-  tags: [lava]
-
-- name: install lava-dispatcher
-  apt:
-    name: lava-dispatcher
-    state: latest
-    default_release: "{{ ansible_distribution_release }}-backports"
   tags: [lava]
 
 - name: disable apache because its a dependency of lava-server
@@ -55,12 +45,9 @@
     mode: 0640
     group: lavaserver
 
-- import_tasks: nginx.yml
-  when: nginx.enabled
-  tags: [nginx]
-
-- import_tasks: lava-docs.yml
-  tags: [docs]
+- import_tasks: caddy.yml
+  when: caddy.enabled
+  tags: [caddy]
 
 - name: check if /etc/lava-server/dispatcher-config/.git is present
   stat:
@@ -75,8 +62,10 @@
 
 - name: checking out disaptcher configuration
   git:
-    repo: 'https://code.fe80.eu/openwrt-lava/lava-dispatcher-config'
+    repo: 'https://github.com/aparcar/lava-dispatcher-config.git'
     dest: /etc/lava-server/dispatcher-config/
     clone: yes
     update: yes
     force: yes
+    version: mediatek_mt7622_linksys_e8450
+

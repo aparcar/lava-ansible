@@ -1,0 +1,16 @@
+{{ caddy.server_name }} {
+
+    root * /usr/share/lava-server/static/lava_server/
+
+    reverse_proxy localhost:8000 
+
+    @websockets {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+
+    route /ws/* {
+      reverse_proxy @websockets localhost:8001
+    }
+
+}

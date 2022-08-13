@@ -1,40 +1,11 @@
-- name: host lava.fe80.eu
-  hosts: lava.fe80.eu
+- name: host lava.aparcar.org
+  hosts: lava.aparcar.org
   user: root
   roles:
-    - role: letsencrypt
-      acme_tiny_challenges_directory: /var/letencrypt-challenge/
-      letsencrypt_certs:
-        - name: "lava.fe80.eu"
-          keypath: "/etc/ssl/private/lava.fe80.eu.key"
-          chainedcertpath: "/etc/ssl/certs/lava.fe80.eu.crt"
-          certpath: "/etc/ssl/certs/lava.fe80.eu.only.crt"
-          host: "lava.fe80.eu"
-      letsencrypt_create_dummy_cert: True
-      letsencrypt_reload_services: [nginx]
-      tags: [ssl]
-
+    - role: common
     - role: lava-server
-      name: lava.fe80.eu
-      smtp:
-        tls: "{{ email_tls }}"
-        host: "{{ email_host }}"
-        port: "{{ email_port }}"
-        from: "{{ email_from }}"
-        user: "{{ email_user }}"
-        password: "{{ email_password }}"
-      nginx:
-        server_name: lava.fe80.eu
-        letsencrypt: true
-        letsencrypt_path: /var/letencrypt-challenge/
+      name: lava.aparcar.org
+      caddy:
+        server_name: lava.aparcar.org
         enabled: true
-        ssl:
-          hsts: true
-          stapling: true
-          stapling_dns: "[2001:4ce8::53] 194.150.168.168 85.214.20.141"
-          key_path: "/etc/ssl/private/lava.fe80.eu.key"
-          cert_path: "/etc/ssl/certs/lava.fe80.eu.crt"
-          # ca_path used for stapling
-          ca_path: "/etc/ssl/certs/ca-certificates.crt"
-          dhparam_path: "/etc/nginx/dhparams.pem"
-      tags: [lava]
+      tags: [lava, caddy]

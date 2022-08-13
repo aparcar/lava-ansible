@@ -13,5 +13,8 @@
   with_items:
     - git
     - htop
-    - screen
-    - vim-nox
+    - tmux
+    - neovim
+    - ranger
+    - sshguard
+    - unattended-upgrades
