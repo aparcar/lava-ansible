@@ -9,8 +9,5 @@
         header Upgrade websocket
     }
 
-    route /ws/* {
-      reverse_proxy @websockets localhost:8001
-    }
-
+    reverse_proxy /ws/* @websockets localhost:8001
 }
